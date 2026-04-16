@@ -9,63 +9,73 @@
     *{margin:0;padding:0;box-sizing:border-box}
 
     body{
-      font-family:Arial;
-      background:#f5f5f5;
-      color:#333;
+      font-family:"Helvetica Neue", sans-serif;
+      background:#fffafc;
+      color:#444;
     }
 
     nav{
       position:fixed;
       top:0;
       width:100%;
-      background:#111;
-      color:#fff;
+      background:#ffffffcc;
+      backdrop-filter:blur(10px);
       display:flex;
       justify-content:space-between;
       padding:15px 30px;
-      z-index:1000;
+      border-bottom:1px solid #eee;
     }
 
-    nav a{color:#fff;margin-left:20px;text-decoration:none}
+    nav a{color:#555;margin-left:20px;text-decoration:none}
 
     .container{
-      max-width:1000px;
+      max-width:800px;
       margin:80px auto;
       padding:20px;
     }
 
     .card{
-      background:#fff;
+      background:white;
       padding:20px;
-      border-radius:16px;
-      box-shadow:0 8px 20px rgba(0,0,0,0.1);
+      border-radius:20px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.05);
       margin-bottom:20px;
       transition:0.3s;
     }
 
-    .card:hover{transform:translateY(-5px)}
+    .card:hover{transform:translateY(-4px)}
+
+    h2{margin-bottom:10px}
 
     textarea,input{
       width:100%;
-      padding:10px;
+      padding:12px;
       margin-top:10px;
-      border-radius:8px;
-      border:1px solid #ccc;
+      border-radius:12px;
+      border:1px solid #eee;
+      background:#fafafa;
     }
 
     button{
       margin-top:10px;
-      padding:8px 12px;
+      padding:10px 14px;
       border:none;
-      border-radius:8px;
-      background:#4caf50;
+      border-radius:12px;
+      background:#ff9bb3;
       color:white;
       cursor:pointer;
+      transition:0.2s;
     }
 
-    .actions button{
-      margin-right:10px;
-      background:#2196f3;
+    button:hover{
+      transform:scale(1.05);
+      background:#ff7fa0;
+    }
+
+    img{
+      max-width:100%;
+      border-radius:12px;
+      margin-top:10px;
     }
 
     small{opacity:0.6;font-size:12px}
@@ -76,7 +86,7 @@
 <body>
 
 <nav>
-  <div><strong>Emma</strong></div>
+  <div>🌸 Emma</div>
   <div>
     <a href="#profile">Profile</a>
     <a href="#diary">Diary</a>
@@ -88,18 +98,20 @@
   <!-- PROFILE -->
   <section id="profile" class="card">
     <h2>👤 About Me</h2>
-    <p><strong>Name:</strong> Emma Liu</p>
-    <p><strong>Location:</strong> Germany</p>
-    <p><strong>Goal:</strong> Pass telc B2 & apply for Master</p>
-    <p><strong>Focus:</strong> German Learning & Self Growth</p>
+    <p>Hi, I'm Emma ✨</p>
+    <p>Living in Germany 🇩🇪</p>
+    <p>Learning German & building my life 🌱</p>
   </section>
 
-  <!-- DIARY SYSTEM V3 -->
+  <!-- DIARY -->
   <section id="diary" class="card">
-    <h2>📖 Diary System v3</h2>
+    <h2>📖 My Diary</h2>
 
     <input id="titleInput" placeholder="Title (optional)">
-    <textarea id="diaryInput" placeholder="Write something..."></textarea>
+    <textarea id="diaryInput" placeholder="Write something cute..."></textarea>
+
+    <!-- 图片上传 -->
+    <input type="file" id="imageInput" accept="image/*">
 
     <button onclick="addEntry()">Add</button>
 
@@ -112,7 +124,6 @@
 
 let entries = JSON.parse(localStorage.getItem('diaryV3')) || [];
 
-// 初始化
 renderAll();
 
 function generateId(){
@@ -122,22 +133,35 @@ function generateId(){
 function addEntry(){
   const title = document.getElementById('titleInput').value;
   const text = document.getElementById('diaryInput').value;
+  const file = document.getElementById('imageInput').files[0];
 
-  if(text.trim()==='') return;
+  if(text.trim()==='' && !file) return;
 
-  const entry = {
-    id: generateId(),
-    title,
-    text,
-    time: new Date().toLocaleString()
-  };
+  const reader = new FileReader();
 
-  entries.unshift(entry);
-  save();
-  renderAll();
+  reader.onload = function(){
+    const entry = {
+      id: generateId(),
+      title,
+      text,
+      image: reader.result || null,
+      time: new Date().toLocaleString()
+    };
+
+    entries.unshift(entry);
+    save();
+    renderAll();
+  }
+
+  if(file){
+    reader.readAsDataURL(file);
+  } else {
+    reader.onload();
+  }
 
   document.getElementById('titleInput').value='';
   document.getElementById('diaryInput').value='';
+  document.getElementById('imageInput').value='';
 }
 
 function renderAll(){
@@ -150,13 +174,11 @@ function renderAll(){
 
     div.innerHTML = `
       <h3 contenteditable="true" onblur="editTitle(${entry.id}, this.innerText)">${entry.title || 'Untitled'}</h3>
-      <p contenteditable="true" onblur="editText(${entry.id}, this.innerText)">${entry.text}</p>
-      <small>${entry.time}</small>
+      <p contenteditable="true" onblur="editText(${entry.id}, this.innerText)">${entry.text || ''}</p>
+      ${entry.image ? `<img src="${entry.image}">` : ''}
+      <small>🕒 ${entry.time}</small>
 
-      <div class="actions">
-        <button onclick="deleteEntry(${entry.id})">Delete</button>
-        <button onclick="shareEntry(${entry.id})">Share</button>
-      </div>
+      <button onclick="deleteEntry(${entry.id})">Delete</button>
     `;
 
     container.appendChild(div);
@@ -183,35 +205,6 @@ function editTitle(id, newTitle){
   const entry = entries.find(e=>e.id===id);
   entry.title = newTitle;
   save();
-}
-
-// 分享（核心升级）
-function shareEntry(id){
-  const entry = entries.find(e=>e.id===id);
-
-  const data = encodeURIComponent(JSON.stringify(entry));
-
-  const url = window.location.origin + window.location.pathname + '?data=' + data;
-
-  navigator.clipboard.writeText(url);
-  alert('Share link copied! Send to others.');
-}
-
-// 接收分享数据
-window.onload = function(){
-  const params = new URLSearchParams(window.location.search);
-  const data = params.get('data');
-
-  if(data){
-    const entry = JSON.parse(decodeURIComponent(data));
-
-    // 防止重复
-    if(!entries.some(e=>e.id===entry.id)){
-      entries.unshift(entry);
-      save();
-      renderAll();
-    }
-  }
 }
 
 </script>

@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Emma Portfolio</title>
 
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
 
     body{
-      font-family:"Helvetica Neue", sans-serif;
+      font-family:'Quicksand', sans-serif;
       background:#fffafc;
       color:#444;
     }
@@ -24,14 +26,18 @@
       justify-content:space-between;
       padding:15px 30px;
       border-bottom:1px solid #eee;
+      z-index:1000;
     }
 
     nav a{color:#555;margin-left:20px;text-decoration:none}
 
     .container{
-      max-width:800px;
+      max-width:1100px;
       margin:80px auto;
       padding:20px;
+      display:grid;
+      grid-template-columns:1fr 2fr;
+      gap:20px;
     }
 
     .card{
@@ -80,6 +86,12 @@
 
     small{opacity:0.6;font-size:12px}
 
+    .left, .right{display:flex;flex-direction:column}
+
+    @media (max-width:768px){
+      .container{grid-template-columns:1fr}
+    }
+
   </style>
 </head>
 
@@ -88,35 +100,58 @@
 <nav>
   <div>🌸 Emma</div>
   <div>
-    <a href="#profile">Profile</a>
-    <a href="#diary">Diary</a>
+    <a href="#">Home</a>
   </div>
 </nav>
 
 <div class="container">
 
-  <!-- PROFILE -->
-  <section id="profile" class="card">
-    <h2>👤 About Me</h2>
-    <p>Hi, I'm Emma ✨</p>
-    <p>Living in Germany 🇩🇪</p>
-    <p>Learning German & building my life 🌱</p>
-  </section>
+  <!-- LEFT COLUMN -->
+  <div class="left">
 
-  <!-- DIARY -->
-  <section id="diary" class="card">
-    <h2>📖 My Diary</h2>
+    <div class="card">
+      <h2>👤 About Me</h2>
+      <p>Hi, I'm Emma ✨</p>
+      <p>Living in Germany 🇩🇪</p>
+    </div>
 
-    <input id="titleInput" placeholder="Title (optional)">
-    <textarea id="diaryInput" placeholder="Write something cute..."></textarea>
+    <div class="card">
+      <h2>🚀 What I'm Doing</h2>
+      <p>📚 Learning German (B1 → B2)</p>
+      <p>🎯 Preparing for exams</p>
+    </div>
 
-    <!-- 图片上传 -->
-    <input type="file" id="imageInput" accept="image/*">
+    <div class="card">
+      <h2>💖 My Interests</h2>
+      <p>🎨 Painting</p>
+      <p>🧘‍♀️ Yoga / Pilates</p>
+      <p>☕ Coffee & Latte Art</p>
+    </div>
 
-    <button onclick="addEntry()">Add</button>
+    <div class="card">
+      <h2>📬 Contact</h2>
+      <p>Email: your@email.com</p>
+      <p>Instagram: @yourname</p>
+    </div>
 
-    <div id="entries"></div>
-  </section>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right">
+
+    <div class="card">
+      <h2>📖 My Diary</h2>
+
+      <input id="titleInput" placeholder="Title">
+      <textarea id="diaryInput" placeholder="Write something..."></textarea>
+      <input type="file" id="imageInput" accept="image/*">
+
+      <button onclick="addEntry()">Add</button>
+
+      <div id="entries"></div>
+    </div>
+
+  </div>
 
 </div>
 
@@ -133,7 +168,8 @@ function generateId(){
 function addEntry(){
   const title = document.getElementById('titleInput').value;
   const text = document.getElementById('diaryInput').value;
-  const file = document.getElementById('imageInput').files[0];
+  const fileInput = document.getElementById('imageInput');
+  const file = fileInput.files[0];
 
   if(text.trim()==='' && !file) return;
 
@@ -161,7 +197,7 @@ function addEntry(){
 
   document.getElementById('titleInput').value='';
   document.getElementById('diaryInput').value='';
-  document.getElementById('imageInput').value='';
+  fileInput.value='';
 }
 
 function renderAll(){

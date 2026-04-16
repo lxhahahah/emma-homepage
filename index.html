@@ -1,169 +1,186 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <title>Emma | Personal Website</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emma's Website</title>
   <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
 
     body {
-
       font-family: Arial, sans-serif;
-
-      margin: 0;
-
-      background: #f7f7f7;
-
-      color: #333;
-
+      background:#f5f5f5;
+      color:#333;
+      line-height:1.6;
     }
 
-    header {
-
-      background: #6c63ff;
-
-      color: white;
-
-      padding: 40px 20px;
-
-      text-align: center;
-
+    /* NAVBAR */
+    nav {
+      position:fixed;
+      top:0;
+      width:100%;
+      background:#222;
+      color:white;
+      display:flex;
+      justify-content:space-between;
+      padding:15px 30px;
+      z-index:1000;
     }
 
-    section {
-
-      max-width: 800px;
-
-      margin: 30px auto;
-
-      background: white;
-
-      padding: 25px;
-
-      border-radius: 10px;
-
+    nav a {
+      color:white;
+      margin-left:20px;
+      text-decoration:none;
+      font-size:14px;
     }
 
-    h2 {
+    nav a:hover { color:#00bcd4; }
 
-      color: #6c63ff;
-
+    /* CONTAINER */
+    .container {
+      max-width:1000px;
+      margin:80px auto 40px;
+      padding:20px;
     }
 
-    ul {
-
-      line-height: 1.8;
-
+    /* CARD */
+    .card {
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom:20px;
     }
 
-    footer {
+    h1, h2 { margin-bottom:10px; }
 
-      text-align: center;
-
-      padding: 20px;
-
-      font-size: 14px;
-
-      color: gray;
-
+    /* FLEX */
+    .flex {
+      display:flex;
+      gap:20px;
     }
 
+    .flex > div { flex:1; }
+
+    /* PROGRESS BAR */
+    .progress {
+      background:#ddd;
+      border-radius:20px;
+      overflow:hidden;
+      height:20px;
+      margin-top:10px;
+    }
+
+    .progress-bar {
+      height:100%;
+      background:#4caf50;
+      width:60%;
+    }
+
+    /* DARK MODE */
+    .dark {
+      background:#121212;
+      color:white;
+    }
+
+    .dark .card { background:#1e1e1e; }
+
+    /* BUTTON */
+    button {
+      padding:8px 12px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      margin-top:10px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:768px) {
+      .flex { flex-direction:column; }
+      nav { flex-direction:column; }
+    }
   </style>
-
 </head>
-
-
-
 <body>
 
+  <!-- NAVBAR -->
+  <nav>
+    <div><strong>Emma</strong></div>
+    <div>
+      <a href="#home">Home</a>
+      <a href="#german">German</a>
+      <a href="#diary">Diary</a>
+    </div>
+  </nav>
 
+  <div class="container">
 
-<header>
+    <!-- HOME -->
+    <section id="home" class="card">
+      <h1>👋 Hi, I'm Emma</h1>
+      <p>I am currently learning German and preparing for exams in Germany.</p>
+      <p>This website records my learning journey.</p>
 
-  <h1>Hi, I'm Emma 👋</h1>
+      <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+    </section>
 
-  <p>Preparing for my Master's studies in Germany</p>
+    <!-- GERMAN LEARNING -->
+    <section id="german" class="card">
+      <input type="number" id="progressInput" placeholder="输入进度 %">
+      <button onclick="updateProgress()">Update</button>
+      <h2>🇩🇪 German Learning</h2>
 
-</header>
+      <div class="flex">
+        <div>
+          <h3>📚 Expressions</h3>
+          <ul>
+            <li>Es kommt darauf an.</li>
+            <li>Ich gebe mein Bestes.</li>
+            <li>Ich bleibe dran.</li>
+          </ul>
+        </div>
 
+        <div>
+          <h3>🎯 Goal</h3>
+          <p>Pass telc C1 in 2026 </p>
+          <div class="progress">
+            <div class="progress-bar"></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
+    <!-- DIARY -->
+    <section id="diary" class="card">
+      <h2>📖 Learning Diary</h2>
 
-<section>
+      <div id="entries"></div>
 
-  <h2>About Me</h2>
+      <textarea id="diaryInput" placeholder="Write today's learning..." style="width:100%; height:80px;"></textarea>
+      <button onclick="addEntry()">Add</button>
+    </section>
 
-  <p>
+  </div>
 
-    I'm currently living in Germany and preparing for my Master's application.
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
 
-    My background is in Measurement and Control Technology.
+    function addEntry() {
+      const input = document.getElementById('diaryInput');
+      const text = input.value;
 
-  </p>
+      if(text.trim() === '') return;
 
-</section>
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.innerText = text;
 
-
-
-<section>
-
-  <h2>What I'm Doing</h2>
-
-  <ul>
-
-    <li>📚 Preparing for telc B2 / C1 exam</li>
-
-    <li>🗣 Practicing German speaking weekly</li>
-
-    <li>🌍 Preparing for IELTS</li>
-
-    <li>💻 Learning to build simple websites</li>
-
-  </ul>
-
-</section>
-
-
-
-<section>
-
-  <h2>My Interests</h2>
-
-  <ul>
-
-    <li>🧘‍♀️ Yoga & Pilates</li>
-
-    <li>🎨 Painting</li>
-
-    <li>🐱 Spending time with my cat mömö</li>
-
-  </ul>
-
-</section>
-
-
-
-<section>
-
-  <h2>Contact</h2>
-
-  <p>Email: emmaliu8023@gmail.com </p>
-
-</section>
-
-
-
-<footer>
-
-  <p>© 2026 Emma</p>
-
-</footer>
-
-
+      document.getElementById('entries').prepend(div);
+      input.value = '';
+    }
+  </script>
 
 </body>
-
 </html>

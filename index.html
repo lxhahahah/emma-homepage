@@ -2,22 +2,46 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>Emma Diary ☁️</title>
+  <title>Emma's Space 🌷</title>
 
   <style>
     body {
+      margin: 0;
       font-family: Arial;
-      max-width: 600px;
+      background: #f6f7fb;
+    }
+
+    .container {
+      display: flex;
+      max-width: 1000px;
       margin: 40px auto;
-      background: #f9f9f9;
+      gap: 20px;
+    }
+
+    .left {
+      width: 35%;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    .right {
+      width: 65%;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    h2 {
+      margin-top: 0;
     }
 
     textarea {
       width: 100%;
       height: 120px;
-      padding: 10px;
       border-radius: 10px;
-      border: 1px solid #ccc;
+      border: 1px solid #ddd;
+      padding: 10px;
     }
 
     button {
@@ -30,98 +54,110 @@
       cursor: pointer;
     }
 
-    #output {
-      margin-top: 30px;
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
+    .diary-item {
+      margin-top: 15px;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    small {
+      color: gray;
     }
   </style>
 </head>
 
 <body>
 
-  <h2>📔 Emma's Diary</h2>
+<div class="container">
 
-  <textarea id="diary" placeholder="写点今天的内容..."></textarea>
-  <button onclick="saveDiary()">保存到云端</button>
+  <!-- 左栏 -->
+  <div class="left">
+    <h2>👩 Emma</h2>
+    <p>Hi, I'm Emma 🌷</p>
 
-  <div id="output"></div>
+    <h3>✨ What I'm doing</h3>
+    <p>Learning German 🇩🇪 & preparing for exams</p>
 
-  <script type="module">
-    // 引入 Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, orderBy, query } 
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    <h3>🎨 My Interests</h3>
+    <p>Painting, Yoga, Coffee ☕</p>
 
-    // ❗❗❗这里换成你的 firebaseConfig
-    const firebaseConfig = {
-     apiKey: "AIzaSyAWZ0RbDjd6ZKPPVIcmbYYQbAGgqIddC9o",
-     authDomain: "emma-home-debc4.firebaseapp.com",
-     projectId: "emma-home-debc4",
-     storageBucket: "emma-home-debc4.firebasestorage.app",
-     messagingSenderId: "136720026127",
-     appId: "1:136720026127:web:aa51fc64d6d023569a317a",
-     measurementId: "G-VYSJV2RGJN"
-    };
+    <h3>📬 Contact</h3>
+    <p>Email: your@email.com</p>
+  </div>
 
-    // 初始化
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  <!-- 右栏 -->
+  <div class="right">
+    <h2>📔 My Diary</h2>
 
-    // ✅ 保存日记
-    async function saveDiary() {
-      const content = document.getElementById("diary").value;
+    <textarea id="diary" placeholder="写点今天的内容..."></textarea>
+    <button onclick="saveDiary()">保存</button>
 
-      if (!content.trim()) {
-        alert("不能保存空内容！");
-        return;
-      }
+    <div id="output"></div>
+  </div>
 
-      try {
-        await addDoc(collection(db, "diaries"), {
-          text: content,
-          time: new Date()
-        });
+</div>
 
-        alert("✅ 已保存！");
-        document.getElementById("diary").value = "";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy } 
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        loadDiary(); // 保存后刷新列表
-      } catch (e) {
-        alert("❌ 保存失败：" + e);
-      }
+  // ❗换成你的
+  const firebaseConfig = {
+  apiKey: "AIzaSyAWZ0RbDjd6ZKPPVIcmbYYQbAGgqIddC9o",
+  authDomain: "emma-home-debc4.firebaseapp.com",
+  projectId: "emma-home-debc4",
+  storageBucket: "emma-home-debc4.firebasestorage.app",
+  messagingSenderId: "136720026127",
+  appId: "1:136720026127:web:aa51fc64d6d023569a317a",
+  measurementId: "G-VYSJV2RGJN"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // 保存
+  async function saveDiary() {
+    const content = document.getElementById("diary").value;
+
+    if (!content.trim()) {
+      alert("不能是空内容");
+      return;
     }
 
-    // ✅ 读取日记（按时间排序）
-    async function loadDiary() {
-      const q = query(collection(db, "diaries"), orderBy("time", "desc"));
-      const querySnapshot = await getDocs(q);
+    await addDoc(collection(db, "diaries"), {
+      text: content,
+      time: new Date()
+    });
 
-      let html = "";
+    document.getElementById("diary").value = "";
+    loadDiary();
+  }
 
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
+  // 读取
+  async function loadDiary() {
+    const q = query(collection(db, "diaries"), orderBy("time", "desc"));
+    const snapshot = await getDocs(q);
 
-        html += `
-          <div style="margin-bottom:15px;">
-            <div>${data.text}</div>
-            <small>${new Date(data.time.seconds * 1000).toLocaleString()}</small>
-            <hr>
-          </div>
-        `;
-      });
+    let html = "";
 
-      document.getElementById("output").innerHTML = html;
-    }
+    snapshot.forEach(doc => {
+      const data = doc.data();
 
-    // ❗关键：让按钮能调用
-    window.saveDiary = saveDiary;
+      html += `
+        <div class="diary-item">
+          <div>${data.text}</div>
+          <small>${new Date(data.time.seconds * 1000).toLocaleString()}</small>
+        </div>
+      `;
+    });
 
-    // 页面加载自动读取
-    window.onload = loadDiary;
+    document.getElementById("output").innerHTML = html;
+  }
 
-  </script>
+  window.saveDiary = saveDiary;
+  window.onload = loadDiary;
+</script>
 
 </body>
 </html>
